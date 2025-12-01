@@ -43,6 +43,17 @@ namespace App.Infrastructure.Repositories
 
             return await _dapperContext.ExecuteScalarAsync<int>(query, user);
         }
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            var query = @"
+                SELECT Id, Username, Email, PasswordHash, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy, IsDeleted
+                FROM Users
+                WHERE IsDeleted = false
+                ORDER BY CreatedAt DESC;
+            ";
+
+            return await _dapperContext.QueryListAsync<User>(query);
+        }
 
         public async Task<int> DeleteUserAsync(int userId, string modifiedBy)
         {

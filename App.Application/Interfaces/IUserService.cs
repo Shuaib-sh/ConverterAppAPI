@@ -9,6 +9,7 @@ namespace App.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<int> CreateOrUpdateUserAsync(UserCreateDto userCreateDto);
+        Task<UserResponseDto> CreateOrUpdateUser(UserCreateDto dto);
+        Task<IEnumerable<UserResponseDto>> GetAllUsers();
     }
 }

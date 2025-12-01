@@ -16,7 +16,7 @@ namespace App.Application.Services
         {
             _userRepo = userRepo;
         }
-        public async Task<int> CreateOrUpdateUserAsync(UserCreateDto dto)
+        public async Task<UserResponseDto> CreateOrUpdateUser(UserCreateDto dto)
         {
             try
             {
@@ -31,12 +31,31 @@ namespace App.Application.Services
                     CreatedBy = "System"
                 };
 
-                return await _userRepo.CreateOrUpdateUserAsync(userEntity);
+                var userId = await _userRepo.CreateOrUpdateUserAsync(userEntity);
+
+                return new UserResponseDto
+                {
+                    Id = userId,
+                    Username = userEntity.Username,
+                    Email = userEntity.Email
+                };
             }
             catch (Exception ex)
             {
                 throw new ApplicationException("Unable to create or update user", ex);
             }
         }
+        public async Task<IEnumerable<UserResponseDto>> GetAllUsers()
+        {
+            var users = await _userRepo.GetAllUsersAsync();
+
+            return users.Select(u => new UserResponseDto
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Email = u.Email
+            });
+        }
+
     }
 }
