@@ -1,4 +1,5 @@
 using ConverterApp.Extensions;
+using ConverterApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationSetup();
+builder.Services.AddCustomApiBehavior();
 builder.Services.AddApplicationServices();
 
 builder.Services.AddSwaggerGen(options =>
@@ -103,6 +105,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAngular");
 
 app.UseHttpsRedirection();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
