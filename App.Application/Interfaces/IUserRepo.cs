@@ -14,5 +14,7 @@ namespace App.Application.Interfaces
         Task<int> DeleteUserAsync(int userId, string modifiedBy);
         Task<bool> UserExistsAsync(string email);
         Task<int> GetUserCountAsync();
+        Task<User> GetUserByEmailAsync(string email);
+        Task SaveRefreshTokenAsync(int userId, string refreshToken, DateTime expiresAt);
     }
 }

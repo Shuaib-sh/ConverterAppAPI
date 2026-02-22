@@ -47,5 +47,11 @@ namespace App.Infrastructure.DB
             using var connection = CreateConnection();
             return await connection.QueryAsync<T>(query, parameters);
         }
+        public async Task<T?> QuerySingleOrDefaultAsync<T>(string query, object? parameters = null)
+        {
+            using var connection = CreateConnection();
+            return await connection.QuerySingleOrDefaultAsync<T>(query, parameters);
+        }
+
     }
 }

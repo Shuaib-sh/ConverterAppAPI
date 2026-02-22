@@ -11,5 +11,6 @@ namespace App.Application.Interfaces
     {
         Task<UserResponseDto> CreateOrUpdateUser(UserCreateDto dto);
         Task<IEnumerable<UserResponseDto>> GetAllUsers();
+        Task<UserLoginResponseDto> UserLogin(UserLoginDto dto);
     }
 }

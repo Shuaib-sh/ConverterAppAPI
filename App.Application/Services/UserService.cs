@@ -1,6 +1,7 @@
 ﻿using App.Application.DTOs.Users;
 using App.Application.Interfaces;
 using App.Domain.Entities;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,13 @@ namespace App.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepo _userRepo;
-        public UserService(IUserRepo userRepo)
+        private readonly IJwtTokenGenerator _jwt;
+        private readonly IConfiguration _config;
+        public UserService(IUserRepo userRepo, IJwtTokenGenerator jwt,IConfiguration configuration)
         {
             _userRepo = userRepo;
+            _jwt = jwt;
+            _config = configuration;
         }
         public async Task<UserResponseDto> CreateOrUpdateUser(UserCreateDto dto)
         {
@@ -55,6 +60,32 @@ namespace App.Application.Services
                 Username = u.Username,
                 Email = u.Email
             });
+        }
+        public async Task<UserLoginResponseDto> UserLogin(UserLoginDto dto)
+        {
+            var user = await _userRepo.GetUserByEmailAsync(dto.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+                return null;
+
+            var accessToken = _jwt.GenerateAccessToken(user.Id, user.Username, user.Email);
+            var refreshToken = _jwt.GenerateRefreshToken();
+            var refreshExpiry = DateTime.UtcNow.AddDays(
+                int.Parse(_config["Jwt:RefreshTokenExpiryDays"]));
+
+            await _userRepo.SaveRefreshTokenAsync(user.Id, refreshToken, refreshExpiry);
+
+            return new UserLoginResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                user = new UserResponseDto
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email
+                }
+            };
         }
 
     }

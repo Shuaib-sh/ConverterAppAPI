@@ -26,6 +26,32 @@ namespace App.Infrastructure.Repositories
             var count = await _dapperContext.ExecuteScalarAsync<int>(query, new { Email = email });
             return count > 0;
         }
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            var query = @"
+                SELECT Id, Username, Email, PasswordHash, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy, IsDeleted
+                FROM Users
+                WHERE Email = @Email AND IsDeleted = false;
+            ";
+            return await _dapperContext.QuerySingleOrDefaultAsync<User>(query, new { Email = email });
+        }
+        public async Task SaveRefreshTokenAsync(int userId, string refreshToken, DateTime expiresAt)
+        {
+            var query = @"
+                INSERT INTO RefreshTokens (UserId, Token, ExpiresAt)
+                VALUES (@UserId, @Token, @ExpiresAt);
+            ";
+
+            var parameters = new
+            {
+                UserId = userId,
+                Token = refreshToken,
+                ExpiresAt = expiresAt
+            };
+
+            await _dapperContext.ExecuteAsync(query, parameters);
+        }
+
         public async Task<int> CreateOrUpdateUserAsync(User user)
         {
             var query = @"

@@ -14,5 +14,6 @@ namespace App.Application.Interfaces
         Task<T> ExecuteScalarAsync<T>(string query, object? parameters = null);
         Task<T> QuerySingleAsync<T>(string query, object? parameters = null);
         Task<IEnumerable<T>> QueryListAsync<T>(string query, object? parameters = null);
+        Task<T?> QuerySingleOrDefaultAsync<T>(string query, object? parameters = null);
     }
 }
