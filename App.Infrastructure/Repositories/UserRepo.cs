@@ -22,7 +22,7 @@ namespace App.Infrastructure.Repositories
         }
         public async Task<bool> UserExistsAsync(string email)
         {
-            var query = "SELECT COUNT(1) FROM Users WHERE Email = @Email";
+            var query = "SELECT COUNT(1) FROM Users WHERE Email = @Email AND IsDeleted = false";
             var count = await _dapperContext.ExecuteScalarAsync<int>(query, new { Email = email });
             return count > 0;
         }
