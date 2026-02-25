@@ -13,9 +13,11 @@ namespace ConverterApp.Extensions
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IToolsService, ToolsService>();
 
             services.AddScoped<IDapperContext, DapperContext>();
             services.AddScoped<IUserRepo, UserRepo>();
+            services.AddScoped<IToolsRepo, ToolsRepo>();
             return services;
         }
     }
