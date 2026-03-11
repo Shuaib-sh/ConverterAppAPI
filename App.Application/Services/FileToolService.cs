@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using Docnet.Core;
 using Docnet.Core.Models;
 using Docnet.Core.Readers;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Formats.Png;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace App.Application.Services
 {
@@ -50,30 +52,13 @@ namespace App.Application.Services
                 using var pageReader = docReader.GetPageReader(i);
 
                 var rawBytes = pageReader.GetImage();
-
                 int width = pageReader.GetPageWidth();
                 int height = pageReader.GetPageHeight();
 
-                using var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-
-                var bmpData = bitmap.LockBits(
-                    new Rectangle(0, 0, width, height),
-                    ImageLockMode.WriteOnly,
-                    bitmap.PixelFormat);
-
-                System.Runtime.InteropServices.Marshal.Copy(rawBytes, 0, bmpData.Scan0, rawBytes.Length);
-                bitmap.UnlockBits(bmpData);
-
-                // 🔹 Fix: remove transparency (convert to white background)
-                using var finalBitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-                using (var g = Graphics.FromImage(finalBitmap))
-                {
-                    g.Clear(Color.White);
-                    g.DrawImage(bitmap, 0, 0);
-                }
+                using var image = Image.LoadPixelData<Rgba32>(rawBytes, width, height);
 
                 using var ms = new MemoryStream();
-                finalBitmap.Save(ms, ImageFormat.Png);
+                image.Save(ms, new PngEncoder());
 
                 var base64 = Convert.ToBase64String(ms.ToArray());
                 images.Add($"data:image/png;base64,{base64}");

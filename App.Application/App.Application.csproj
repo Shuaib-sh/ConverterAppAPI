@@ -22,6 +22,7 @@
     <PackageReference Include="NHapi.Base" Version="3.2.3" />
     <PackageReference Include="NHapi.Model.V251" Version="3.2.4" />
     <PackageReference Include="PdfiumViewer" Version="2.13.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.3" />
   </ItemGroup>
 
