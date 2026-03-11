@@ -1,4 +1,5 @@
 ﻿using App.Application.DTOs.Users;
+using App.Application.Validators.DataFormat;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 
@@ -12,7 +13,7 @@ namespace ConverterApp.Extensions
             services.AddFluentValidationAutoValidation();
 
             services.AddValidatorsFromAssemblyContaining<UserCreateDto>();
-
+            services.AddValidatorsFromAssembly(typeof(ParseHL7RequestValidator).Assembly);
             return services;
         }
     }

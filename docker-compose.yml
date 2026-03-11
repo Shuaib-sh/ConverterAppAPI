@@ -1,0 +1,6 @@
+services:
+  converterapp:
+    image: ${DOCKER_REGISTRY-}converterapp
+    build:
+      context: .
+      dockerfile: ConverterApp/Dockerfile

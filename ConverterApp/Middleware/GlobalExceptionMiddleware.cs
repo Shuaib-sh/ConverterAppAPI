@@ -24,7 +24,6 @@ namespace ConverterApp.Middleware
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled Exception");
-
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -81,7 +80,10 @@ namespace ConverterApp.Middleware
 
             var response = ApiResponse<string>.FailureResponse(message, errors);
 
-            var json = JsonSerializer.Serialize(response);
+            var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
 
             await context.Response.WriteAsync(json);
         }

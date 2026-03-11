@@ -1,5 +1,7 @@
-﻿using App.Application.Interfaces;
+﻿using App.Application.Factory;
+using App.Application.Interfaces;
 using App.Application.Services;
+using App.Application.Tools;
 using App.Infrastructure.Auth;
 using App.Infrastructure.DB;
 using App.Infrastructure.Repositories;
@@ -14,6 +16,16 @@ namespace ConverterApp.Extensions
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IToolsService, ToolsService>();
+            services.AddScoped<IDataFormatService, DataFormatService>();
+            services.AddScoped<IFileToolService, FileToolService>();
+
+            // Register tools
+            services.AddScoped<IToolProcessor, JsonFormatterTool>();
+            services.AddScoped<IToolProcessor, Hl7ParserTool>();
+            services.AddScoped<IToolProcessor, TextToPdfTool>();
+            services.AddScoped<IToolProcessor, PdfToImageTool>();
+
+            services.AddScoped<ToolFactory>();
 
             services.AddScoped<IDapperContext, DapperContext>();
             services.AddScoped<IUserRepo, UserRepo>();
