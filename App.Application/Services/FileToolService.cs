@@ -1,18 +1,19 @@
 ﻿using App.Application.Interfaces;
+using Docnet.Core;
+using Docnet.Core.Models;
+using Docnet.Core.Readers;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Docnet.Core;
-using Docnet.Core.Models;
-using Docnet.Core.Readers;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Formats.Png;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace App.Application.Services
@@ -56,6 +57,11 @@ namespace App.Application.Services
                 int height = pageReader.GetPageHeight();
 
                 using var image = Image.LoadPixelData<Rgba32>(rawBytes, width, height);
+                // 🔹 Create white background
+                using var finalImage = new Image<Rgba32>(width, height, Color.White);
+
+                // 🔹 Draw PDF image on white background
+                finalImage.Mutate(x => x.DrawImage(image, 1f));
 
                 using var ms = new MemoryStream();
                 image.Save(ms, new PngEncoder());
