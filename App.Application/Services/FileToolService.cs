@@ -63,8 +63,14 @@ namespace App.Application.Services
                 // 🔹 Draw PDF image on white background
                 finalImage.Mutate(x => x.DrawImage(image, 1f));
 
+                //using var ms = new MemoryStream();
+                //image.Save(ms, new PngEncoder());
+
+                //var base64 = Convert.ToBase64String(ms.ToArray());
+                //images.Add($"data:image/png;base64,{base64}");
+
                 using var ms = new MemoryStream();
-                image.Save(ms, new PngEncoder());
+                finalImage.Save(ms, new PngEncoder()); // ✅ Save final image
 
                 var base64 = Convert.ToBase64String(ms.ToArray());
                 images.Add($"data:image/png;base64,{base64}");
