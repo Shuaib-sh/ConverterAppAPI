@@ -24,6 +24,7 @@ namespace ConverterApp.Extensions
             services.AddScoped<IToolProcessor, Hl7ParserTool>();
             services.AddScoped<IToolProcessor, TextToPdfTool>();
             services.AddScoped<IToolProcessor, PdfToImageTool>();
+            services.AddScoped<IToolProcessor, ImageToPdfTool>();
 
             services.AddScoped<ToolFactory>();
 

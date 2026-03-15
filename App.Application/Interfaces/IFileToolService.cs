@@ -10,5 +10,6 @@ namespace App.Application.Interfaces
     {
         Task<byte[]> GeneratePdfFromText(string input);
         Task<List<string>> ConvertPdfToImages(byte[] pdfBytes);
+        Task<byte[]> ConvertImagesToPdf(List<byte[]> imageFiles);
     }
 }

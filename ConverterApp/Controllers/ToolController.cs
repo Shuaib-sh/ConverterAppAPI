@@ -1,6 +1,7 @@
 ﻿using App.Application.Common;
 using App.Application.Factory;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace ConverterApp.Controllers
@@ -27,13 +28,21 @@ namespace ConverterApp.Controllers
             if (Request.HasFormContentType)
             {
                 var form = await Request.ReadFormAsync();
-                var file = form.Files.FirstOrDefault();
+                var files = form.Files;
 
-                if (file != null)
+                if (files.Count > 0)
                 {
-                    using var ms = new MemoryStream();
-                    await file.CopyToAsync(ms);
-                    input = Convert.ToBase64String(ms.ToArray());
+                    var base64Images = new List<string>();
+
+                    foreach (var file in files)
+                    {
+                        using var ms = new MemoryStream();
+                        await file.CopyToAsync(ms);
+
+                        base64Images.Add(Convert.ToBase64String(ms.ToArray()));
+                    }
+
+                    input = JsonConvert.SerializeObject(base64Images);
                 }
             }
             else

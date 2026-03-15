@@ -63,20 +63,40 @@ namespace App.Application.Services
                 // 🔹 Draw PDF image on white background
                 finalImage.Mutate(x => x.DrawImage(image, 1f));
 
-                //using var ms = new MemoryStream();
-                //image.Save(ms, new PngEncoder());
-
-                //var base64 = Convert.ToBase64String(ms.ToArray());
-                //images.Add($"data:image/png;base64,{base64}");
-
                 using var ms = new MemoryStream();
-                finalImage.Save(ms, new PngEncoder()); // ✅ Save final image
+                finalImage.Save(ms, new PngEncoder());
 
                 var base64 = Convert.ToBase64String(ms.ToArray());
                 images.Add($"data:image/png;base64,{base64}");
             }
 
             return images;
+        }
+
+        public async Task<byte[]> ConvertImagesToPdf(List<byte[]> imageFiles)
+        {
+            using var stream = new MemoryStream();
+
+            var writer = new PdfWriter(stream);
+            var pdf = new PdfDocument(writer);
+            var document = new Document(pdf);
+
+            foreach (var imageBytes in imageFiles)
+            {
+                var imageData = iText.IO.Image.ImageDataFactory.Create(imageBytes);
+                var image = new iText.Layout.Element.Image(imageData);
+
+                image.SetAutoScale(true);
+
+                document.Add(image);
+
+                if (imageFiles.Last() != imageBytes)
+                    document.Add(new AreaBreak());
+            }
+
+            document.Close();
+
+            return stream.ToArray();
         }
     }
 }
