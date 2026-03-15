@@ -16,5 +16,7 @@ namespace App.Application.Interfaces
         Task<int> GetUserCountAsync();
         Task<User> GetUserByEmailAsync(string email);
         Task SaveRefreshTokenAsync(int userId, string refreshToken, DateTime expiresAt);
+        Task<RefreshToken> GetRefreshTokenAsync(string refreshToken);
+        Task<User> GetUserByIdAsync(int id);
     }
 }

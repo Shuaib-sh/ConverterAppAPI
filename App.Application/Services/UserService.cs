@@ -70,8 +70,7 @@ namespace App.Application.Services
 
             var accessToken = _jwt.GenerateAccessToken(user.Id, user.Username, user.Email);
             var refreshToken = _jwt.GenerateRefreshToken();
-            var refreshExpiry = DateTime.UtcNow.AddDays(
-                int.Parse(_config["Jwt:RefreshTokenExpiryDays"]));
+            var refreshExpiry = DateTime.UtcNow.AddDays(int.Parse(_config["Jwt:RefreshTokenExpiryDays"]));
 
             await _userRepo.SaveRefreshTokenAsync(user.Id, refreshToken, refreshExpiry);
 
@@ -86,6 +85,26 @@ namespace App.Application.Services
                     Email = user.Email
                 }
             };
+        }
+
+        public async Task<string?> GetAccessTokenFromRefreshToken(string refreshToken)
+        {
+            var tokenRecord = await _userRepo.GetRefreshTokenAsync(refreshToken);
+
+            if (tokenRecord == null)
+                return null;
+
+            if (tokenRecord.ExpiresAt <= DateTime.UtcNow)
+                return null;
+
+            var user = await _userRepo.GetUserByIdAsync(tokenRecord.UserId);
+
+            if (user == null)
+                return null;
+
+            var newAccessToken = _jwt.GenerateAccessToken(user.Id, user.Username, user.Email);
+
+            return newAccessToken;
         }
 
     }

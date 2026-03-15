@@ -96,5 +96,33 @@ namespace App.Infrastructure.Repositories
             };
             return await _dapperContext.ExecuteAsync(query, parameters);
         }
+
+        public async Task<RefreshToken> GetRefreshTokenAsync(string refreshToken)
+        {
+            var query = @"
+                        SELECT Id, UserId, Token, ExpiresAt
+                        FROM RefreshTokens
+                        WHERE Token = @Token;
+           ";
+
+            return await _dapperContext.QuerySingleOrDefaultAsync<RefreshToken>(
+                query,
+                new { Token = refreshToken }
+            );
+        }
+
+        public async Task<User> GetUserByIdAsync(int id)
+        {
+            var query = @"
+                        SELECT Id, Username, Email, PasswordHash
+                        FROM Users
+                        WHERE Id = @Id AND IsDeleted = false;
+           ";
+
+            return await _dapperContext.QuerySingleOrDefaultAsync<User>(
+                query,
+                new { Id = id }
+            );
+        }
     }
 }

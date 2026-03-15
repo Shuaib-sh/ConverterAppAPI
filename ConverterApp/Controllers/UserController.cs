@@ -3,11 +3,12 @@ using App.Application.DTOs.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using static App.Application.DTOs.TokenRequest;
 
 namespace ConverterApp.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly App.Application.Interfaces.IUserService _userService;
@@ -33,6 +34,20 @@ namespace ConverterApp.Controllers
         {
             var loginResponse = await _userService.UserLogin(loginDto);
             return Ok(ApiResponse<UserLoginResponseDto>.SuccessResponse(loginResponse, "Login successful"));
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        {
+            var accessToken = await _userService.GetAccessTokenFromRefreshToken(request.RefreshToken);
+
+            if (accessToken == null)
+                return Unauthorized(ApiResponse<string>.FailureResponse("Invalid or expired refresh token"));
+
+            return Ok(ApiResponse<object>.SuccessResponse(
+                new { accessToken },
+                "Access token refreshed successfully"
+            ));
         }
     }
 }
