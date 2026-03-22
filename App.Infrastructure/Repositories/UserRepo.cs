@@ -124,5 +124,40 @@ namespace App.Infrastructure.Repositories
                 new { Id = id }
             );
         }
+
+        public async Task<User> CreateGoogleUserAsync(User user)
+        {
+            var query = @"
+                INSERT INTO Users (Username, Email, GoogleId, CreatedAt, IsDeleted)
+                VALUES (@Username, @Email, @GoogleId, @CreatedAt, false)
+                RETURNING Id;
+            ";
+
+            var userId = await _dapperContext.ExecuteScalarAsync<int>(query, new
+            {
+                user.Username,
+                user.Email,
+                user.GoogleId,
+                user.CreatedAt
+            });
+
+            user.Id = userId;
+            return user;
+        }
+
+        public async Task UpdateGoogleIdAsync(int userId, string googleId)
+        {
+            var query = @"
+                UPDATE Users
+                SET GoogleId = @GoogleId
+                WHERE Id = @UserId;
+            ";
+
+            await _dapperContext.ExecuteAsync(query, new
+            {
+                UserId = userId,
+                GoogleId = googleId
+            });
+        }
     }
 }

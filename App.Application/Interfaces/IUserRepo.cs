@@ -18,5 +18,7 @@ namespace App.Application.Interfaces
         Task SaveRefreshTokenAsync(int userId, string refreshToken, DateTime expiresAt);
         Task<RefreshToken> GetRefreshTokenAsync(string refreshToken);
         Task<User> GetUserByIdAsync(int id);
+        Task<User> CreateGoogleUserAsync(User user);
+        Task UpdateGoogleIdAsync(int userId, string googleId);
     }
 }

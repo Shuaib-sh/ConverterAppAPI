@@ -49,5 +49,13 @@ namespace ConverterApp.Controllers
                 "Access token refreshed successfully"
             ));
         }
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDto request)
+        {
+            var response = await _userService.GoogleLoginAsync(request.IdToken);
+
+            return Ok(ApiResponse<UserLoginResponseDto>.SuccessResponse(response,"Google login successful"));
+        }
     }
 }

@@ -13,5 +13,6 @@ namespace App.Application.Interfaces
         Task<IEnumerable<UserResponseDto>> GetAllUsers();
         Task<UserLoginResponseDto> UserLogin(UserLoginDto dto);
         Task<string?> GetAccessTokenFromRefreshToken(string refreshToken);
+        Task<UserLoginResponseDto> GoogleLoginAsync(string idToken);
     }
 }

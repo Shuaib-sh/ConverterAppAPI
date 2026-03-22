@@ -1,6 +1,7 @@
 ﻿using App.Application.DTOs.Users;
 using App.Application.Interfaces;
 using App.Domain.Entities;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -107,5 +108,64 @@ namespace App.Application.Services
             return newAccessToken;
         }
 
+        public async Task<UserLoginResponseDto> GoogleLoginAsync(string idToken)
+        {
+            GoogleJsonWebSignature.Payload payload;
+
+            try
+            {
+                payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+            }
+            catch
+            {
+                throw new UnauthorizedAccessException("Invalid Google token");
+            }
+
+            if (payload.EmailVerified != true)
+                throw new UnauthorizedAccessException("Google email not verified");
+
+            var email = payload.Email;
+            var name = payload.Name;
+            var googleId = payload.Subject;
+
+            var user = await _userRepo.GetUserByEmailAsync(email);
+
+            if (user == null)
+            {
+               
+                user = await _userRepo.CreateGoogleUserAsync(new User
+                {
+                    Email = email,
+                    Username = name,
+                    GoogleId = googleId,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(user.GoogleId))
+                {
+                    await _userRepo.UpdateGoogleIdAsync(user.Id, googleId);
+                }
+            }
+
+            var accessToken = _jwt.GenerateAccessToken(user.Id, user.Username, user.Email);
+            var refreshToken = _jwt.GenerateRefreshToken();
+            var refreshExpiry = DateTime.UtcNow.AddDays(int.Parse(_config["Jwt:RefreshTokenExpiryDays"]));
+
+            await _userRepo.SaveRefreshTokenAsync(user.Id, refreshToken, refreshExpiry);
+
+            return new UserLoginResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                user = new UserResponseDto
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email
+                }
+            };
+        }
     }
 }
