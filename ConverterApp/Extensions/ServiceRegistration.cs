@@ -19,6 +19,8 @@ namespace ConverterApp.Extensions
             services.AddScoped<IDataFormatService, DataFormatService>();
             services.AddScoped<IFileToolService, FileToolService>();
 
+            services.AddScoped<IEmailService, EmailService>();
+
             // Register tools
             services.AddScoped<IToolProcessor, JsonFormatterTool>();
             services.AddScoped<IToolProcessor, Hl7ParserTool>();
